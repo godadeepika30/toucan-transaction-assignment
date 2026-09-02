@@ -1,0 +1,192 @@
+CUSTOMER TRANSACTION SERVICE - OUTPUTS FOR SUBMISSION
+=====================================================
+
+1. STARTER PROJECT ENDPOINT
+---------------------------
+GET /api/sample
+HTTP Status: 200 OK
+
+{
+  "message": "Starter project is running"
+}
+
+
+2. CREATE TRANSACTION - SUCCESS
+-------------------------------
+POST /api/transactions
+Request body:
+
+{
+  "transactionId": "TXN-100",
+  "customerId": "CUST-20",
+  "amount": 125.50,
+  "currency": "INR",
+  "transactionType": "PAYMENT",
+  "status": "PENDING"
+}
+
+HTTP Status: 201 Created
+
+{
+  "transactionId": "TXN-100",
+  "customerId": "CUST-20",
+  "amount": 125.50,
+  "currency": "INR",
+  "transactionType": "PAYMENT",
+  "status": "PENDING"
+}
+
+
+3. GET TRANSACTION - SUCCESS
+----------------------------
+GET /api/transactions/TXN-100
+HTTP Status: 200 OK
+
+{
+  "transactionId": "TXN-100",
+  "customerId": "CUST-20",
+  "amount": 125.50,
+  "currency": "INR",
+  "transactionType": "PAYMENT",
+  "status": "PENDING"
+}
+
+
+4. UPDATE STATUS - SUCCESS
+--------------------------
+PATCH /api/transactions/TXN-100/status
+Request body:
+
+{
+  "status": "COMPLETED"
+}
+
+HTTP Status: 200 OK
+
+{
+  "transactionId": "TXN-100",
+  "customerId": "CUST-20",
+  "amount": 125.50,
+  "currency": "INR",
+  "transactionType": "PAYMENT",
+  "status": "COMPLETED"
+}
+
+
+5. GET CUSTOMER TRANSACTIONS - SUCCESS
+--------------------------------------
+GET /api/customers/CUST-20/transactions
+HTTP Status: 200 OK
+
+[
+  {
+    "transactionId": "TXN-100",
+    "customerId": "CUST-20",
+    "amount": 125.50,
+    "currency": "INR",
+    "transactionType": "PAYMENT",
+    "status": "COMPLETED"
+  }
+]
+
+
+6. INVALID AMOUNT VALIDATION
+----------------------------
+POST /api/transactions (amount: -1.00)
+HTTP Status: 400 Bad Request
+
+{
+  "status": 400,
+  "message": "Amount must be positive"
+}
+
+
+7. DUPLICATE TRANSACTION ID
+---------------------------
+POST /api/transactions (using an existing transactionId)
+HTTP Status: 409 Conflict
+
+{
+  "status": 409,
+  "message": "Transaction ID already exists"
+}
+
+
+8. TRANSACTION NOT FOUND
+------------------------
+GET /api/transactions/MISSING
+HTTP Status: 404 Not Found
+
+{
+  "status": 404,
+  "message": "Transaction 'MISSING' was not found"
+}
+
+
+9. INVALID TRANSACTION ID
+-------------------------
+GET /api/transactions/invalid%20id
+HTTP Status: 400 Bad Request
+
+{
+  "status": 400,
+  "message": "Transaction ID may contain only letters, numbers, hyphens, and underscores"
+}
+
+
+10. INVALID STATUS TRANSITION
+-----------------------------
+PATCH /api/transactions/TXN-100/status (after it is COMPLETED)
+Request body:
+
+{
+  "status": "FAILED"
+}
+
+HTTP Status: 409 Conflict
+
+{
+  "status": 409,
+  "message": "Status transition is not permitted from COMPLETED"
+}
+
+
+11. MISSING STATUS IN UPDATE REQUEST
+------------------------------------
+PATCH /api/transactions/TXN-100/status
+Request body:
+
+{}
+
+HTTP Status: 400 Bad Request
+
+{
+  "status": 400,
+  "message": "Transaction status is required"
+}
+
+
+12. EMPTY CUSTOMER TRANSACTION LIST
+-----------------------------------
+GET /api/customers/NO-TRANSACTIONS/transactions
+HTTP Status: 200 OK
+
+[]
+
+
+TEST CASES IMPLEMENTED
+======================
+1. Creates and persists a valid transaction.
+2. Rejects a negative transaction amount.
+3. Rejects a duplicate transaction ID.
+4. Returns 404 for a missing transaction.
+5. Rejects an invalid transaction ID in the URL path.
+6. Updates a PENDING transaction and rejects a later terminal-status change.
+7. Returns transactions belonging only to the requested customer.
+
+SUPPORTED VALUES
+================
+Currencies: INR, USD, EUR
+Transaction types: PAYMENT, REFUND, TRANSFER
+Statuses: PENDING, COMPLETED, FAILED, CANCELLED
+Allowed status changes: PENDING -> COMPLETED, FAILED, or CANCELLED
