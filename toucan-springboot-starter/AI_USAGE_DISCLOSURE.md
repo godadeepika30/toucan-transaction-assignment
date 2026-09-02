@@ -2,11 +2,11 @@
 
 ## Tools used
 
-OpenAI Codex was used as a coding assistant while completing this exercise.
+ChatGPt was used as a coding assistant while completing this exercise.
 
 ## What AI was used for
 
-It assisted with reviewing the starter project, suggesting a simple controller-service-repository structure, drafting Java code, validation and status-lifecycle ideas, integration tests, error handling, and this documentation.
+It assisted with reviewing the starter project, suggesting a simple controller-service-repository structure, validation and status-lifecycle ideas, integration tests, error handling.
 
 ## Significant suggestions and review
 
